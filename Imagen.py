@@ -94,3 +94,36 @@ def info_imagen(ruta):
     except IOError:
         print("Unable to load image")
         pass
+
+def rotacion(x, y, theta):
+    coseno= cos(theta)
+    seno= sin(theta)
+    return (round(x*coseno+y*seno), round(y*coseno-x*seno))
+
+def rotar_imagen(ruta, theta):
+    img = Image.open(ruta)
+    rgb_matriz= np.array(img)
+    pixel_matriz= tuple(map(binarizar_row, rgb_matriz))
+    
+    #Rotar sobre el centro de masa del objeto
+    filas= len(pixel_matriz)
+    columnas= len(pixel_matriz)
+    origen_x, origen_y= calcular_centros_masa(pixel_matriz)
+    origen_x= round(origen_x)
+    origen_y= round(origen_y)
+    imagen_rotada= np.zeros((filas+100, columnas+100)) #Agregamos marcos de 50 pixeles
+
+    for (i, row) in enumerate(pixel_matriz):
+        for (j, pixel) in enumerate(row):
+            if(pixel==1):
+                i2, j2= rotacion(i-origen_x, j-origen_y, (theta/180)*pi) #Usar grados en lugar de pi radianes
+                if (i2+origen_x)<columnas and (j2+origen_y)<filas:
+                    imagen_rotada[i2+origen_x+50][j2+origen_y+50]=255 #Ajustamos de coordenadas a pixeles en la imágen
+    
+    #Guardar la imágen rotada
+    imagen_rotada_archivo= Image.fromarray(imagen_rotada)
+    imagen_rotada_archivo.show()
+
+
+rotar_imagen("./Dataset_Escalado/caballo_esc.jpg", 68)
+
