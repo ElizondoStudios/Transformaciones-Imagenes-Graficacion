@@ -6,6 +6,7 @@ from skimage import morphology
 
 # Ruta del archivo (reemplaza con la ruta de tu imagen)
 file_path = "Transformaciones-Imagenes-Graficacion/Dataset_Texto/tortuga.txt"
+# Ruta donde se guardará la grafica
 save_path = "Transformaciones-Imagenes-Graficacion/Imagenes_SN_Ruido/tortuga_ruido.png"
 
 # Leer el archivo asegurando que los valores sean enteros
