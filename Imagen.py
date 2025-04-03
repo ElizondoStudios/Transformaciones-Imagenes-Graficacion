@@ -79,7 +79,7 @@ def calcular_phi_3(matriz):
     return pow((calcular_miu(matriz, 3, 0) - (3 * calcular_miu(matriz, 1, 2))), 2) + pow(((3 * calcular_miu(matriz, 2, 1)) - calcular_miu(matriz, 0, 3)), 2)
 
 
-def calcular_contorno(matriz: np.ndarray[np.int8]):
+def calcular_contorno(matriz: np.ndarray[np.int8]) -> Image:
     if not isinstance(matriz, np.ndarray):
         matriz = np.array(matriz)
 
@@ -92,12 +92,14 @@ def calcular_contorno(matriz: np.ndarray[np.int8]):
                 if np.sum(sub_matriz) == 9:
                     eroded[x][y] = 1
 
-    for x in range(0, len(matriz) - 1):
-        for y in range(0, len(matriz[0]) - 1):
-            if matriz[x][y] == 1 and eroded[x][y] == 1:
-                matriz[x][y] = 0
+    # Al relleno lo pasamos a negativo de esta forma
+    eroded *= -1
+    # Como el relleno es -1 y el original es 1, sumamos los dos
+    # al sumar los dos, esto hace que el relleno que seria 1 se convierta en 0 (1 - 1)
+    # y el contorno seria (1 - 0)
+    matriz += eroded
 
-    Image.fromarray((matriz * 255).astype(np.uint8)).show()
+    return Image.fromarray((matriz * 255).astype(np.uint8))
 
 
 def info_imagen(ruta):
