@@ -124,6 +124,35 @@ def rotar_imagen(ruta, theta):
     imagen_rotada_archivo= Image.fromarray(imagen_rotada)
     imagen_rotada_archivo.show()
 
+def interpolar(pixels, x, y):
+    # obtenemos las coordenadas de los 4 puntos mas cercanos a x,y
+    x_floor = int(np.floor(x))
+    y_floor = int(np.floor(y))
+    x_ceil = int(np.ceil(x))
+    y_ceil = int(np.ceil(y))
+
+    # decimales de diferencia
+    decimal_x = x - x_floor
+    decimal_y = y - y_floor
+
+    # obtenemos los pixeles mas cercanos a nuestras coordenadas
+    p1 = pixels[y_floor, x_floor] if (0 <= y_floor < pixels.shape[0] and 
+                                     0 <= x_floor < pixels.shape[1]) else 0
+    p2 = pixels[y_floor, x_ceil] if (0 <= y_floor < pixels.shape[0] and
+                                     0 <= x_ceil < pixels.shape[1]) else 0
+    p3 = pixels[y_ceil, x_floor] if (0 <= y_ceil < pixels.shape[0] and 
+                                    0 <= x_ceil < pixels.shape[1]) else 0
+    p4 = pixels[y_ceil, x_ceil] if (0 <= y_ceil < pixels.shape[0] and 
+                                   0 <= x_ceil < pixels.shape[1]) else 0
+
+    # realizamos la interpolacion biliniear
+    interpolated = (
+        (1 - decimal_x) * (1 - decimal_y) * p1 + #contribucion de p1
+        decimal_x * (1 - decimal_y) * p2 + # contribucion de p2
+        (1 - decimal_x) * decimal_y * p3 + # contribucion de p3
+        decimal_x * decimal_y * p4 # contribucion de p4
+    )
+    return interpolated
 
 rotar_imagen("./Dataset_Escalado/caballo_esc.jpg", 68)
 
