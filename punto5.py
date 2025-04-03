@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 # Ruta del archivo
-file_path = "Transformaciones-Imagenes-Graficacion/Dataset_Texto/tortuga.txt"
+file_path = "Transformaciones-Imagenes-Graficacion/Dataset_Texto/murcielago.txt"
 
 # Leer el archivo asegurando que los valores sean enteros
 with open(file_path, "r") as f:
@@ -24,7 +24,7 @@ ax.set_xticklabels([])
 ax.set_yticklabels([])
 
 # Ruta para guardar la imagen (ajusta la carpeta según sea necesario)
-save_path = "Transformaciones-Imagenes-Graficacion/Graficos_Computadora_Celdas/tortuga_cuadricula.png"
+save_path = "Transformaciones-Imagenes-Graficacion/Graficos_Computadora_Celdas/murcielago_cuadricula.png"
 
 # Asegurarse de que el directorio exista
 os.makedirs(os.path.dirname(save_path), exist_ok=True)

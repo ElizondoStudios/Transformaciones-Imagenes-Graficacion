@@ -8,7 +8,7 @@
 6. [ ] Obtener el contorno de cada uno de los objetos binarios, considerando la vecindad-8. Obtener un gráfico por computadora donde se muestren las celdas del contorno.
 7. [ ] Calcular el centro de masa $(x_{cm}, y_{cm})$ de cada uno de los objetos binarios. Trasladar la imagen original a una posición diferente y calcular los momentos centrales para p,q = 0,1 y 2. Reportar los resultados en una tabla. (2)
 8. [ ] Para cada objeto, realizar una rotación* con un ángulo $\theta$, y calcular los tres primeros momentos de $\phi_{u}$, antes y después de la rotación. (3)
-9. [ ] Aplicar operadores morfológicos a los objetos binarios para
+9. [x] Aplicar operadores morfológicos a los objetos binarios para
 	a) Quitar ruido
 	b) Suavizar bordes
 	c) Rellenar huecos
