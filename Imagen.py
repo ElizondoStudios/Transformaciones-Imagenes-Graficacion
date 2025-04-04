@@ -173,3 +173,25 @@ def rotar_imagen(ruta, nombre_archivo, theta):
     #Guardar la imágen rotada e interpolada
     imagen_rotada_archivo= Image.fromarray(imagen_interpolada.astype(np.uint8))
     imagen_rotada_archivo.save(f"./Dataset_Rotado/{nombre_archivo}")
+
+def trasladar_imagen(ruta, nombre_archivo, x, y):
+    img = Image.open(ruta)
+    rgb_matriz= np.array(img)
+    pixel_matriz= tuple(map(binarizar_row, rgb_matriz))
+    
+    #Rotar sobre el centro de masa del objeto
+    filas= len(pixel_matriz)
+    columnas= len(pixel_matriz)
+    origen_x, origen_y= calcular_centros_masa(pixel_matriz)
+    origen_x= round(origen_x)
+    origen_y= round(origen_y)
+    imagen_trasladada= np.zeros((filas+x+20, columnas+y+20)) #Agregamos marcos
+
+    for (i, row) in enumerate(pixel_matriz):
+        for (j, pixel) in enumerate(row):
+            if(pixel==1):
+                imagen_trasladada[i+x][j+y]= 255
+    
+    #Guardar la imágen trasladada
+    imagen_trasladada_archivo= Image.fromarray(imagen_trasladada.astype(np.uint8))
+    imagen_trasladada_archivo.save(f"./Dataset_Trasladado/{nombre_archivo}")
