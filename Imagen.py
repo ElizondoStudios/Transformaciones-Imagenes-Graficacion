@@ -95,12 +95,25 @@ def info_imagen(ruta):
         print("Unable to load image")
         pass
 
+def interpolar(matriz):
+    #Vamos a rellenar los pixeles que tengan la mayoría de sus pixeles en V4 encendidos
+    interpolada= matriz
+    for (i, row) in enumerate(matriz):
+        for (j, pixel) in enumerate(row):
+            vecino_arriba= matriz[i-1][j] if i>0 else 0
+            vecino_abajo= matriz[i+1][j] if i<len(matriz)-1 else 0
+            vecino_izquierda= matriz[i][j-1] if j>0 else 0
+            vecino_derecho= matriz[i][j+1] if j<len(row)-1 else 0
+            if pixel==0 and (vecino_arriba+vecino_abajo+vecino_izquierda+vecino_derecho)>765:
+                interpolada[i][j]=255
+    return interpolada
+
 def rotacion(x, y, theta):
     coseno= cos(theta)
     seno= sin(theta)
     return (round(x*coseno+y*seno), round(y*coseno-x*seno))
 
-def rotar_imagen(ruta, theta):
+def rotar_imagen(ruta, nombre_archivo, theta):
     img = Image.open(ruta)
     rgb_matriz= np.array(img)
     pixel_matriz= tuple(map(binarizar_row, rgb_matriz))
@@ -117,42 +130,12 @@ def rotar_imagen(ruta, theta):
         for (j, pixel) in enumerate(row):
             if(pixel==1):
                 i2, j2= rotacion(i-origen_x, j-origen_y, (theta/180)*pi) #Usar grados en lugar de pi radianes
-                if (i2+origen_x)<columnas and (j2+origen_y)<filas:
+                if (i2+origen_x)<columnas+50 and (j2+origen_y)<filas+50:
                     imagen_rotada[i2+origen_x+50][j2+origen_y+50]=255 #Ajustamos de coordenadas a pixeles en la imágen
     
-    #Guardar la imágen rotada
-    imagen_rotada_archivo= Image.fromarray(imagen_rotada)
-    imagen_rotada_archivo.show()
-
-def interpolar(pixels, x, y):
-    # obtenemos las coordenadas de los 4 puntos mas cercanos a x,y
-    x_floor = int(np.floor(x))
-    y_floor = int(np.floor(y))
-    x_ceil = int(np.ceil(x))
-    y_ceil = int(np.ceil(y))
-
-    # decimales de diferencia
-    decimal_x = x - x_floor
-    decimal_y = y - y_floor
-
-    # obtenemos los pixeles mas cercanos a nuestras coordenadas
-    p1 = pixels[y_floor, x_floor] if (0 <= y_floor < pixels.shape[0] and 
-                                     0 <= x_floor < pixels.shape[1]) else 0
-    p2 = pixels[y_floor, x_ceil] if (0 <= y_floor < pixels.shape[0] and
-                                     0 <= x_ceil < pixels.shape[1]) else 0
-    p3 = pixels[y_ceil, x_floor] if (0 <= y_ceil < pixels.shape[0] and 
-                                    0 <= x_ceil < pixels.shape[1]) else 0
-    p4 = pixels[y_ceil, x_ceil] if (0 <= y_ceil < pixels.shape[0] and 
-                                   0 <= x_ceil < pixels.shape[1]) else 0
-
-    # realizamos la interpolacion biliniear
-    interpolated = (
-        (1 - decimal_x) * (1 - decimal_y) * p1 + #contribucion de p1
-        decimal_x * (1 - decimal_y) * p2 + # contribucion de p2
-        (1 - decimal_x) * decimal_y * p3 + # contribucion de p3
-        decimal_x * decimal_y * p4 # contribucion de p4
-    )
-    return interpolated
-
-rotar_imagen("./Dataset_Escalado/caballo_esc.jpg", 68)
-
+    #Interpolamos la imágen para recuperar los pixeles perdidos al rotar
+    imagen_interpolada= interpolar(imagen_rotada)
+    
+    #Guardar la imágen rotada e interpolada
+    imagen_rotada_archivo= Image.fromarray(imagen_interpolada.astype(np.uint8))
+    imagen_rotada_archivo.save(f"./Dataset_Rotado/{nombre_archivo}")
