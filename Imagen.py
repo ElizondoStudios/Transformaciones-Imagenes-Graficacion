@@ -128,3 +128,48 @@ def info_imagen(ruta):
     except IOError:
         print("Unable to load image")
         pass
+
+def interpolar(matriz):
+    #Vamos a rellenar los pixeles que tengan la mayoría de sus pixeles en V4 encendidos
+    interpolada= matriz
+    for (i, row) in enumerate(matriz):
+        for (j, pixel) in enumerate(row):
+            vecino_arriba= matriz[i-1][j] if i>0 else 0
+            vecino_abajo= matriz[i+1][j] if i<len(matriz)-1 else 0
+            vecino_izquierda= matriz[i][j-1] if j>0 else 0
+            vecino_derecho= matriz[i][j+1] if j<len(row)-1 else 0
+            if pixel==0 and (vecino_arriba+vecino_abajo+vecino_izquierda+vecino_derecho)>765:
+                interpolada[i][j]=255
+    return interpolada
+
+def rotacion(x, y, theta):
+    coseno= cos(theta)
+    seno= sin(theta)
+    return (round(x*coseno+y*seno), round(y*coseno-x*seno))
+
+def rotar_imagen(ruta, nombre_archivo, theta):
+    img = Image.open(ruta)
+    rgb_matriz= np.array(img)
+    pixel_matriz= tuple(map(binarizar_row, rgb_matriz))
+    
+    #Rotar sobre el centro de masa del objeto
+    filas= len(pixel_matriz)
+    columnas= len(pixel_matriz)
+    origen_x, origen_y= calcular_centros_masa(pixel_matriz)
+    origen_x= round(origen_x)
+    origen_y= round(origen_y)
+    imagen_rotada= np.zeros((filas+100, columnas+100)) #Agregamos marcos de 50 pixeles
+
+    for (i, row) in enumerate(pixel_matriz):
+        for (j, pixel) in enumerate(row):
+            if(pixel==1):
+                i2, j2= rotacion(i-origen_x, j-origen_y, (theta/180)*pi) #Usar grados en lugar de pi radianes
+                if (i2+origen_x)<columnas+50 and (j2+origen_y)<filas+50:
+                    imagen_rotada[i2+origen_x+50][j2+origen_y+50]=255 #Ajustamos de coordenadas a pixeles en la imágen
+    
+    #Interpolamos la imágen para recuperar los pixeles perdidos al rotar
+    imagen_interpolada= interpolar(imagen_rotada)
+    
+    #Guardar la imágen rotada e interpolada
+    imagen_rotada_archivo= Image.fromarray(imagen_interpolada.astype(np.uint8))
+    imagen_rotada_archivo.save(f"./Dataset_Rotado/{nombre_archivo}")
